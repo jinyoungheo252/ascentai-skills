@@ -62,6 +62,23 @@ MCP 도구는 `is_skills` 불리언으로 **스킬이 부른 호출과 사람이
   않는다 — 실행 중 LLM 이 보는 것은 호출 예시다
 - `user_query` 와 마찬가지로 **캐시 키에서는 빠진다** → `mcp_cache.py --params` 에 넣지 않는다
 
+### `skill_desc` 도 모든 호출에 붙인다
+
+`is_skills` 는 스킬 호출인지만 가른다. **어느 스킬·어느 버전이 부른 호출인지**는
+`skill_desc` 로 보낸다 · 문자열이 아니라 **JSON 객체**다 (MCP 스키마 실측 2026-10-28 · 6도구 전부).
+
+```json
+"is_skills": true,
+"skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}
+```
+
+- 문서에는 **플레이스홀더만** 적는다. 값은 `scripts/build.sh` 가 `lm-<폴더명>` 과
+  `skill.yaml` 의 `version` 으로 박는다 — 버전을 사람이 두 곳에 적지 않게 하려는 것이다 (§7)
+- 플레이스홀더가 zip 에 남으면 빌드가 실패한다 · 남으면 admin 에 그대로 기록된다
+- `is_skills` 와 같은 자리, **호출 예시마다** 넣는다 · 캐시 키에서 빠진다 (`--params` 에 넣지 않는다)
+- `borrows` 로 빌려온 형제 문서도 빌드 시 빌린 쪽 이름으로 치환된다 —
+  total 실행의 호출은 `lm-total-report` 로 기록된다
+
 ---
 
 ## 2. 세션 캐시 (`~/.lima-agents/mcp-cache/`)

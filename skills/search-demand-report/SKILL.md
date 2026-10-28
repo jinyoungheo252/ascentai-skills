@@ -191,7 +191,8 @@ python3 "$SKILL_DIR/scripts/mcp_cache.py" lookup <tool> \
 ```
 
 - **exit 0 = hit** · the file is already filled → **do not call MCP.** Go on.
-- **exit 2 = miss** · call the tool with `"response_format": "download_url"` and `"is_skills": true`, then ②.
+- **exit 2 = miss** · call the tool with `"response_format": "download_url"`, `"is_skills": true` and
+  `"skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}`, then ②.
 
 ```bash
 # ② Fetch the download URL → verify → store in the cache (one command)
@@ -200,7 +201,7 @@ python3 "$SKILL_DIR/_shared/render/fetch_dl.py" --url "<browser_download_url>" \
   --tool <tool> --params '<exactly the same parameter JSON as in ①>'
 ```
 
-`--params` **must be identical** in ① and ②, and must not contain `user_query`, `response_format` or `is_skills` changes between runs —
+`--params` **must be identical** in ① and ②, and must not contain `user_query`, `response_format`, `is_skills` or `skill_desc` changes between runs —
 otherwise the next run will not hit. Leave out `--items` when the envelope has no `item_count` (cluster_finder).
 
 ### Response file rules (the most important part)
@@ -243,6 +244,17 @@ put the **user's utterance verbatim** (no translation, summary or paraphrase). I
 Every MCP call takes `"is_skills": true` — it tells ListeningMind the call comes from a skill, not a plain prompt.
 **It is not attached automatically** and defaults to `false`, so add it to every call. It is not part of the cache key
 (never put it in `--params`).
+
+### skill_desc
+
+Every MCP call also takes `skill_desc` — it tells ListeningMind **which skill and version** made the call. Send this
+object **as is** (a JSON object, not a string), next to `"is_skills": true`:
+
+```json
+"skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}
+```
+
+Like `is_skills`, it is not attached automatically and is not part of the cache key (never put it in `--params`).
 
 ### Credits
 

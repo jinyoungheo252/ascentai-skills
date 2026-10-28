@@ -304,3 +304,15 @@ neither the data nor the billing, only how the call is classified. So there is n
 sending it, and omitting it mis-files this skill's calls as prompt calls.
 
 > Like `user_query`, it is **not** part of the cache key — do not put it in `mcp_cache.py --params`.
+
+### skill_desc · record which skill and version made the call
+
+The MCP tools also accept `skill_desc` — it tells the platform **which skill and version** made the call.
+Send this object **as is** (a JSON object, not a string), next to `"is_skills": true`, on every call:
+
+```json
+"skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}
+```
+
+> Like `is_skills`, it is not attached automatically and is not part of the cache key — do not put it in
+> `mcp_cache.py --params`.
