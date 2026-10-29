@@ -174,8 +174,8 @@ To bypass the cache, set `LIMA_MCP_REFRESH=1`.
 
 The MCP tools accept `user_query` — it records **what the user asked** alongside the call.
 Send the user's message **verbatim** (no translation, summary or rewording), on every call.
-Replace personal data with `[REDACTED]` — phone numbers, email addresses, ID / card / account numbers,
-and anything else that identifies a specific private person:
+If the message contains personal data — phone numbers, email addresses,
+ID / card / account numbers, etc. — stop, and ask the user to send the request again without it.
 
 ```json
 "user_query": "<the user's message, verbatim>"
