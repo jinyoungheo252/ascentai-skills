@@ -191,8 +191,7 @@ python3 "$SKILL_DIR/scripts/mcp_cache.py" lookup <tool> \
 ```
 
 - **exit 0 = hit** · the file is already filled → **do not call MCP.** Go on.
-- **exit 2 = miss** · call the tool with `"response_format": "download_url"`, `"is_skills": true` and
-  `"skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}`, then ②.
+- **exit 2 = miss** · call the tool as shown in the call example (`references/workflow.md`), then ②.
 
 ```bash
 # ② Fetch the download URL → verify → store in the cache (one command)
@@ -201,8 +200,7 @@ python3 "$SKILL_DIR/_shared/render/fetch_dl.py" --url "<browser_download_url>" \
   --tool <tool> --params '<exactly the same parameter JSON as in ①>'
 ```
 
-`--params` **must be identical** in ① and ②, and must not contain `user_query`, `response_format`, `is_skills` or `skill_desc` changes between runs —
-otherwise the next run will not hit. Leave out `--items` when the envelope has no `item_count` (cluster_finder).
+`--params` **must be identical** in ① and ②. If they differ, the next run will not hit the cache. Leave out `--items` when the envelope has no `item_count` (cluster_finder).
 
 ### Response file rules (the most important part)
 
@@ -234,27 +232,41 @@ because the response is large. If reducing scope seems unavoidable, stop and tel
 across skills. It works only when the host gives a session env var; without one the skill calls MCP every time — deliberately,
 rather than reuse another conversation's data. `LIMA_MCP_REFRESH=1` bypasses it.
 
-### user_query
+### user_query · record what the user asked
 
-Every MCP call takes a `user_query` parameter that ListeningMind stores in its history. **It is not attached automatically** —
-put the **user's utterance verbatim** (no translation, summary or paraphrase). It is not part of the cache key.
+The MCP tools accept `user_query` — it records **what the user asked** alongside the call.
+Send the user's message **verbatim** (no translation, summary or rewording), on every call:
 
-### is_skills
+```json
+"user_query": "<the user's message, verbatim>"
+```
 
-Every MCP call takes `"is_skills": true` — it tells ListeningMind the call comes from a skill, not a plain prompt.
-**It is not attached automatically** and defaults to `false`, so add it to every call. It is not part of the cache key
-(never put it in `--params`).
+> It is not attached automatically and is not part of the cache key — do not put it in
+> `mcp_cache.py --params`.
 
-### skill_desc
+### is_skills · mark the call as a skill call
 
-Every MCP call also takes `skill_desc` — it tells ListeningMind **which skill and version** made the call. Send this
-object **as is** (a JSON object, not a string), next to `"is_skills": true`:
+The MCP tools accept `is_skills` — it tells the platform the call **comes from a skill**, not a plain prompt.
+It defaults to `false`, so send it **as `true`**, on every call:
+
+```json
+"is_skills": true
+```
+
+> It is not attached automatically and is not part of the cache key — do not put it in
+> `mcp_cache.py --params`.
+
+### skill_desc · record which skill and version made the call
+
+The MCP tools accept `skill_desc` — it tells the platform **which skill and version** made the call.
+Send this object **as is** (a JSON object, not a string), next to `"is_skills": true`, on every call:
 
 ```json
 "skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}
 ```
 
-Like `is_skills`, it is not attached automatically and is not part of the cache key (never put it in `--params`).
+> It is not attached automatically and is not part of the cache key — do not put it in
+> `mcp_cache.py --params`.
 
 ### Credits
 

@@ -92,7 +92,7 @@ On a miss, call the **`intent_finder` MCP tool** with these parameters:
 {"keywords": ["<SEED>"], "gl": "<MARKET>", "limit": 1000,
  "sort": "volume_avg", "order": "desc", "volume_threshold": 0,
  "user_query": "<the user's utterance, verbatim>", "is_skills": true,
- "skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}}
+ "skill_desc": <the object in SKILL.md ### skill_desc>}
 ```
 
 > **`volume_threshold` must be `0`** — this collects **all** related keywords, exactly like the
@@ -139,7 +139,7 @@ python3 {SKILL_DIR}/scripts/mcp_cache.py lookup keyword_info \
 ```
 
 On a miss, call the **`keyword_info` MCP tool** with the contents of `kw_params.json` + `user_query`
-+ `"is_skills": true` + `"skill_desc": {"name": "__SKILL_NAME__", "version": "__SKILL_VERSION__"}`.
++ `"is_skills": true` + `"skill_desc": <the object in SKILL.md ### skill_desc>`.
 **`data_type` must be `all`**, and **all top 1,000 keywords must be included**.
 
 > **Do not reduce the scale on your own.** Cutting to 300 keywords or lowering `data_type` to
